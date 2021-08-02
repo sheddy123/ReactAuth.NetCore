@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ReactAuth.NetCore.Data;
+using Microsoft.EntityFrameworkCore;
+using ReactAuth.NetCore.Models;
 
 namespace ReactAuth.NetCore
 {
@@ -20,7 +23,7 @@ namespace ReactAuth.NetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddDbContext<UserContext>(options => options.UseSqlServer(Configuration.GetConnectionString(SD.DefaultConnection)));
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory
