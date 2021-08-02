@@ -8,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 using ReactAuth.NetCore.Data;
 using Microsoft.EntityFrameworkCore;
 using ReactAuth.NetCore.Models;
+using ReactAuth.NetCore.Repository.IRepository;
+using ReactAuth.NetCore.Repository;
 
 namespace ReactAuth.NetCore
 {
@@ -25,6 +27,7 @@ namespace ReactAuth.NetCore
         {
             services.AddDbContext<UserContext>(options => options.UseSqlServer(Configuration.GetConnectionString(SD.DefaultConnection)));
             services.AddControllersWithViews();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
