@@ -11,9 +11,11 @@ namespace ReactAuth.NetCore.Repository
     public class UserRepository : IUserRepository
     {
         private readonly UserContext _userContext;
+      
         public UserRepository(UserContext userContext)
         {
             _userContext = userContext;
+          
         }
 
         public User Create(User user)
@@ -29,6 +31,11 @@ namespace ReactAuth.NetCore.Repository
                 user.ErrorMessage = ex.InnerException.Message;
                 return user;
             }
+        }
+
+        public User GetByEmail(string email)
+        {
+            return _userContext.Users.FirstOrDefault(a => a.Email.Equals(email));
         }
     }
 }

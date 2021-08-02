@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ReactAuth.NetCore.Data.Dtos;
+using ReactAuth.NetCore.Helpers;
 using ReactAuth.NetCore.Models;
 using ReactAuth.NetCore.Repository.IRepository;
 
@@ -16,13 +18,15 @@ namespace ReactAuth.NetCore.Controllers
     {
 
         private readonly IUserRepository _userRepository;
-        public AuthController(IUserRepository userRepository)
+        private readonly JwtService _jwtService;
+        public AuthController(IUserRepository userRepository, JwtService jwtService)
         {
             _userRepository = userRepository;
+            _jwtService = jwtService;
         }
 
         [HttpPost("Register")]
-        public IActionResult Register(RegisterDto userDto)
+        public IActionResult Register([FromBody]RegisterDto userDto)
         {
             var newUser = new User()
             {
@@ -34,6 +38,20 @@ namespace ReactAuth.NetCore.Controllers
 
             return !String.IsNullOrEmpty(newUser.ErrorMessage) ? StatusCode(400, new { Message = newUser.ErrorMessage }) 
                 : StatusCode(201, new { email = newUser.Email, username = newUser.UserName });
+        }
+
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] LoginDto loginDto)
+        {
+            var user = _userRepository.GetByEmail(loginDto.Email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
+                return StatusCode(500, new { message = "Invalid Credentials" });
+
+            var jwtString = _jwtService.Generate(user.Id);
+            Response.Cookies.Append("jwt", jwtString, new CookieOptions { HttpOnly = true });
+
+            return Ok(new { message = "Successfully logged in."});
         }
     }
 }

@@ -9,5 +9,6 @@ namespace ReactAuth.NetCore.Repository.IRepository
     public interface IUserRepository
     {
         User Create(User user);
+        User GetByEmail(string email);
     }
 }
