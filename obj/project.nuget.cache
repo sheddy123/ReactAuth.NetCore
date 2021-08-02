@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "4csuLmkhuNr9n6ltQGZmGd22G8cTfU+qNc+Jq5J+tAisFPy4mgjit+4hLL7RVmWUFNyYxzVrjDClR7HtkYhNqA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\iodom\\source\\repos\\ReactAuth.NetCore\\ReactAuth.NetCore.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\iodom\\.nuget\\packages\\microsoft.aspnetcore.spaservices.extensions\\5.0.8\\microsoft.aspnetcore.spaservices.extensions.5.0.8.nupkg.sha512",
+    "C:\\Users\\iodom\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\5.0.0\\microsoft.extensions.fileproviders.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\iodom\\.nuget\\packages\\microsoft.extensions.fileproviders.physical\\5.0.0\\microsoft.extensions.fileproviders.physical.5.0.0.nupkg.sha512",
+    "C:\\Users\\iodom\\.nuget\\packages\\microsoft.extensions.filesystemglobbing\\5.0.0\\microsoft.extensions.filesystemglobbing.5.0.0.nupkg.sha512",
+    "C:\\Users\\iodom\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.0\\microsoft.extensions.primitives.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
