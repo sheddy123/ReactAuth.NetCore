@@ -11,6 +11,8 @@ using ReactAuth.NetCore.Models;
 using ReactAuth.NetCore.Repository.IRepository;
 using ReactAuth.NetCore.Repository;
 using ReactAuth.NetCore.Helpers;
+using ReactAuth.NetCore.Mappings;
+using AutoMapper;
 
 namespace ReactAuth.NetCore
 {
@@ -31,6 +33,7 @@ namespace ReactAuth.NetCore
             services.AddControllersWithViews();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<JwtService>();
+            services.AddAutoMapper(typeof(Usermappings));
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

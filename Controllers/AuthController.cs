@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using ReactAuth.NetCore.Data.Dtos;
 using ReactAuth.NetCore.Helpers;
 using ReactAuth.NetCore.Models;
+using AutoMapper;
 using ReactAuth.NetCore.Repository.IRepository;
 
 namespace ReactAuth.NetCore.Controllers
@@ -19,39 +20,52 @@ namespace ReactAuth.NetCore.Controllers
 
         private readonly IUserRepository _userRepository;
         private readonly JwtService _jwtService;
-        public AuthController(IUserRepository userRepository, JwtService jwtService)
+        private readonly IMapper _mapper;
+
+        public AuthController(IUserRepository userRepository, JwtService jwtService, IMapper mapper)
         {
             _userRepository = userRepository;
             _jwtService = jwtService;
+            _mapper = mapper;
         }
 
         [HttpPost("Register")]
         public IActionResult Register([FromBody]RegisterDto userDto)
         {
-            var newUser = new User()
+            try
             {
-                UserName = userDto.UserName,
-                Email = userDto.Email,
-                Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password)
-            };
-            _userRepository.Create(newUser);
+                var newUser = _mapper.Map<User>(userDto);
+                newUser.Password = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
+                _userRepository.Create(newUser);
 
-            return !String.IsNullOrEmpty(newUser.ErrorMessage) ? StatusCode(400, new { Message = newUser.ErrorMessage }) 
-                : StatusCode(201, new { email = newUser.Email, username = newUser.UserName });
+                return !String.IsNullOrEmpty(newUser.ErrorMessage) ? StatusCode(400, new { Message = newUser.ErrorMessage })
+                    : StatusCode(201, new { email = newUser.Email, username = newUser.UserName, message="User successfully created" });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("Login")]
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
-            var user = _userRepository.GetByEmail(loginDto.Email);
+            try
+            {
+                var user = _userRepository.GetByEmail(loginDto.Email);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
-                return StatusCode(500, new { message = "Invalid Credentials" });
+                if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
+                    return StatusCode(500, new { message = "Invalid Credentials" });
 
-            var jwtString = _jwtService.Generate(user.Id);
-            Response.Cookies.Append("jwt", jwtString, new CookieOptions { HttpOnly = true });
+                var jwtString = _jwtService.Generate(user.Id);
+                Response.Cookies.Append("jwt", jwtString, new CookieOptions { HttpOnly = true });
 
-            return Ok(new { message = "Successfully logged in."});
+                return Ok(new { message = "Successfully logged in." });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("GetUser")]
@@ -66,18 +80,25 @@ namespace ReactAuth.NetCore.Controllers
                 return Ok(user);
             }catch(Exception ex)
             {
-                return Unauthorized(ex.Message);
+                return Unauthorized("User not logged in");
             }
         }
 
         [HttpPost("Logout")]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("jwt");
-            return Ok(new
+            try
             {
-                message = "success"
-            });
+                Response.Cookies.Delete("jwt");
+                return Ok(new
+                {
+                    message = "success"
+                });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
