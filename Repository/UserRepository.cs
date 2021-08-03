@@ -37,5 +37,10 @@ namespace ReactAuth.NetCore.Repository
         {
             return _userContext.Users.FirstOrDefault(a => a.Email.Equals(email));
         }
+
+        public User GetById(int id)
+        {
+            return _userContext.Users.FirstOrDefault(a => a.Id.Equals(id));
+        }
     }
 }

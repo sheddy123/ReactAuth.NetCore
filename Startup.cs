@@ -27,6 +27,7 @@ namespace ReactAuth.NetCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<UserContext>(options => options.UseSqlServer(Configuration.GetConnectionString(SD.DefaultConnection)));
+            services.AddCors();
             services.AddControllersWithViews();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<JwtService>();
@@ -57,7 +58,8 @@ namespace ReactAuth.NetCore
             app.UseSpaStaticFiles();
 
             app.UseRouting();
-
+            app.UseCors(options => options.WithOrigins(new[] { "http://localhost:3000" }).AllowAnyHeader().AllowAnyMethod().AllowCredentials());
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

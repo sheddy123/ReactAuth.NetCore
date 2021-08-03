@@ -53,5 +53,31 @@ namespace ReactAuth.NetCore.Controllers
 
             return Ok(new { message = "Successfully logged in."});
         }
+
+        [HttpGet("GetUser")]
+        public IActionResult GetUser()
+        {
+            try
+            {
+                var jwtString = Request.Cookies["jwt"];
+                var token = _jwtService.Verify(jwtString);
+                int userId = int.Parse(token.Issuer);
+                var user = _userRepository.GetById(userId);
+                return Ok(user);
+            }catch(Exception ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpPost("Logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("jwt");
+            return Ok(new
+            {
+                message = "success"
+            });
+        }
     }
 }

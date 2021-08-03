@@ -10,5 +10,6 @@ namespace ReactAuth.NetCore.Repository.IRepository
     {
         User Create(User user);
         User GetByEmail(string email);
+        User GetById(int Id);
     }
 }
