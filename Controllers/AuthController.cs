@@ -60,7 +60,7 @@ namespace ReactAuth.NetCore.Controllers
                 var jwtString = _jwtService.Generate(user.Id);
                 Response.Cookies.Append("jwt", jwtString, new CookieOptions { HttpOnly = true });
 
-                return Ok(new { message = "Successfully logged in." });
+                return Ok(new { username=user.UserName, message = "Successfully logged in." });
             }
             catch(Exception ex)
             {
