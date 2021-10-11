@@ -10,12 +10,12 @@ namespace ReactAuth.NetCore.Repository
 {
     public class UserRepository : IUserRepository
     {
-        private readonly UserContext _userContext;
+        private readonly UserContext _userContexts;
 
-        public UserRepository(UserContext userContext) => _userContext = userContext;
+        public UserRepository(UserContext userContexts) => _userContexts = userContexts;
 
 
-        public User Create(User user)
+        public User Create(User user, UserContext _userContext)
         {
             try
             {
@@ -30,10 +30,10 @@ namespace ReactAuth.NetCore.Repository
             }
         }
 
-        public User GetByEmail(string email) => _userContext.Users.FirstOrDefault(a => a.Email.Equals(email));
+        public User GetByEmail(string email, UserContext _userContext) => _userContext.Users.FirstOrDefault(a => a.Email.Equals(email));
 
 
-        public User GetById(int id) => _userContext.Users.FirstOrDefault(a => a.Id.Equals(id));
+        public User GetById(int id, UserContext _userContext) => _userContext.Users.FirstOrDefault(a => a.Id.Equals(id));
 
     }
 }

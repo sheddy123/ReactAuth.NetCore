@@ -10,6 +10,7 @@ using ReactAuth.NetCore.Helpers;
 using ReactAuth.NetCore.Models;
 using AutoMapper;
 using ReactAuth.NetCore.Repository.IRepository;
+using ReactAuth.NetCore.Data;
 
 namespace ReactAuth.NetCore.Controllers
 {
@@ -21,10 +22,12 @@ namespace ReactAuth.NetCore.Controllers
         private readonly IUserRepository _userRepository;
         private readonly JwtService _jwtService;
         private readonly IMapper _mapper;
+        private readonly UserContext _userContext;
 
-        public AuthController(IUserRepository userRepository, JwtService jwtService, IMapper mapper)
+        public AuthController(IUserRepository userRepository, JwtService jwtService, IMapper mapper, UserContext userContext)
         {
             _userRepository = userRepository;
+            _userContext = userContext;
             _jwtService = jwtService;
             _mapper = mapper;
         }
@@ -36,10 +39,10 @@ namespace ReactAuth.NetCore.Controllers
             {
                 var newUser = _mapper.Map<User>(userDto);
                 newUser.Password = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
-                _userRepository.Create(newUser);
+                _userRepository.Create(newUser,_userContext);
 
                 return !String.IsNullOrEmpty(newUser.ErrorMessage) ? StatusCode(400, new { Message = newUser.ErrorMessage })
-                    : StatusCode(201, new { email = newUser.Email, username = newUser.UserName, message="User successfully created" });
+                    : StatusCode(201, new RegisterResponse { Email = newUser.Email, Username = newUser.UserName, Message="User successfully created" });
             }
             catch(Exception ex)
             {
@@ -52,7 +55,7 @@ namespace ReactAuth.NetCore.Controllers
         {
             try
             {
-                var user = _userRepository.GetByEmail(loginDto.Email);
+                var user = _userRepository.GetByEmail(loginDto.Email,_userContext);
 
                 if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
                     return StatusCode(500, new { message = "Invalid Credentials" });
@@ -76,7 +79,7 @@ namespace ReactAuth.NetCore.Controllers
                 var jwtString = Request.Cookies["jwt"];
                 var token = _jwtService.Verify(jwtString);
                 int userId = int.Parse(token.Issuer);
-                var user = _userRepository.GetById(userId);
+                var user = _userRepository.GetById(userId,_userContext);
                 return Ok(user);
             }catch(Exception ex)
             {
