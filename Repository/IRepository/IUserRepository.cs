@@ -1,4 +1,5 @@
-﻿using ReactAuth.NetCore.Models;
+﻿using ReactAuth.NetCore.Data;
+using ReactAuth.NetCore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,8 @@ namespace ReactAuth.NetCore.Repository.IRepository
 {
     public interface IUserRepository
     {
-        User Create(User user);
-        User GetByEmail(string email);
-        User GetById(int Id);
+        User Create(User user, UserContext _userContext);
+        User GetByEmail(string email, UserContext _userContext);
+        User GetById(int Id, UserContext _userContext);
     }
 }
